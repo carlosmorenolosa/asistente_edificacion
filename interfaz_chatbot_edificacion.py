@@ -1,70 +1,103 @@
+# --------------------------------------------------
+# Asistente Técnico Inteligente para Construcción
+# Versión: UI Mejorada (abril 2025)
+# --------------------------------------------------
+# 👉 La lógica de negocio RAG se mantiene intacta; solo se han aplicado
+#    mejoras sustanciales en diseño y experiencia de usuario.
+# --------------------------------------------------
+
 import streamlit as st
 import google.generativeai as genai
 from pinecone import Pinecone
+from datetime import datetime
 
 # ---------------- Configuración -----------------
 GENAI_API_KEY = st.secrets["general"]["genai_api_key"]
 PINECONE_API_KEY = st.secrets["general"]["pinecone_api_key"]
 INDEX_NAME = "documentacion-edificacion"
-MIN_SIMILARITY_SCORE = 0.50  # 70%
+MIN_SIMILARITY_SCORE = 0.50  # 70 %
 
+# NB: Misma configuración de recuperación
+
+# ---------------- Inicialización -----------------
 genai.configure(api_key=GENAI_API_KEY)
 model = genai.GenerativeModel("gemini-2.0-flash")
 
 pc = Pinecone(api_key=PINECONE_API_KEY)
 index = pc.Index(INDEX_NAME)
 
-# ---------------- Estilos -----------------
+# ---------------- Estilos globales -----------------
 st.set_page_config(
-    page_title="Asistente Técnico Inteligente para Construcción", 
-    page_icon="🔍", 
-    layout="wide"
+    page_title="Asistente Técnico Inteligente",
+    page_icon="🏗️",
+    layout="wide",
+    menu_items={
+        "Report a bug": "mailto:soporte@tuempresa.com",
+        "About": "### Asistente Técnico\nHerramienta IA para consulta de documentación de edificación."
+    },
 )
 
-st.markdown("""
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            color: #333;
-            background-color: #f8f9fa;
-        }
-        .fragment-container {
-            margin-top: 10px;
-            border-left: 3px solid #0066cc;
-            padding-left: 15px;
-            background-color: #f0f5ff;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            padding: 15px;
-        }
-        .fragment-source {
-            font-weight: 600;
-            color: #0066cc;
-            font-size: 0.85rem;
-            margin-bottom: 5px;
-        }
-        .fragment-score {
-            font-size: 0.85rem;
-            color: #555;
-            margin-bottom: 6px;
-        }
-        .fragment-content {
-            font-size: 0.9rem;
-            color: #333;
-            white-space: pre-wrap;
-        }
-        .stTextInput input {
-            border-radius: 4px;
-            border: 1px solid #ddd;
-        }
-        h1, h2, h3 {
-            font-weight: 600;
-            color: #0066cc;
-        }
-    </style>
-""", unsafe_allow_html=True)
+PRIMARY_COLOR = "#0066cc"
 
-# ---------------- Prompt Base -----------------
+st.markdown(
+    f"""
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        html, body, [class*="css"]  {{
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }}
+        .block-container {{
+            padding-top: 1.5rem;
+            padding-bottom: 2rem;
+        }}
+        /* Encabezado */
+        .app-header {{
+            background: linear-gradient(90deg, {PRIMARY_COLOR} 0%, #3e8eff 100%);
+            padding: 1.2rem 2rem;
+            border-radius: 0 0 12px 12px;
+            color: #fff;
+            margin-bottom: 1.2rem;
+        }}
+        .app-header h1 {{
+            font-weight: 600;
+            font-size: 1.75rem;
+            margin: 0;
+        }}
+        /* Fragmentos */
+        .fragment-container {{
+            border-left: 4px solid {PRIMARY_COLOR};
+            background-color: #f5f9ff;
+            padding: 0.8rem 1rem;
+            border-radius: 6px;
+            margin-bottom: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }}
+        .fragment-source {{
+            font-weight: 600;
+            color: {PRIMARY_COLOR};
+            font-size: 0.85rem;
+            margin-bottom: 2px;
+        }}
+        .fragment-score {{
+            font-size: 0.75rem;
+            color: #666;
+            margin-bottom: 4px;
+        }}
+        .fragment-content {{
+            font-size: 0.88rem;
+            white-space: pre-wrap;
+        }}
+        /* Chat message tweaks */
+        .stChatMessage .stMarkdown p {{
+            margin-bottom: 0.5rem;
+        }}
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+# ---------------- Prompt Base (sin cambios) -----------------
 custom_prompt = """
 Eres un asistente técnico inteligente especializado en documentación de ingeniería civil y proyectos de construcción.
 Tu objetivo es proporcionar respuestas precisas, técnicas y claras basadas únicamente en la documentación proporcionada.
@@ -86,55 +119,81 @@ Instrucciones:
 Tu estilo debe ser técnico, preciso y objetivo.
 """
 
-# ---------------- Estado -----------------
+# ---------------- Estado de sesión -----------------
 if "conversation" not in st.session_state:
     st.session_state.conversation = []
 
-# ---------------- Funciones ----------------
+# ---------------- Funciones auxiliares -----------------
+
 def display_fragments(fragments):
+    """Renderiza los pasajes recuperados en un contenedor elegante."""
     if not fragments:
         st.info("No se encontraron fragmentos relevantes para esta consulta.")
         return
-    for fragment in fragments:
-        st.markdown(f"""
-        <div class="fragment-container">
-            <div class="fragment-source">📄 Documento: {fragment['documento']}</div>
-            <div class="fragment-score">🔍 Similitud: {fragment['score']:.2%}</div>
-            <div class="fragment-content">{fragment['texto']}</div>
+    for frag in fragments:
+        badge_color = "#28a745" if frag["score"] >= 0.8 else ("#ffc107" if frag["score"] >= 0.6 else "#dc3545")
+        st.markdown(
+            f"""
+            <div class="fragment-container">
+                <div class="fragment-source">📄 {frag['documento']}</div>
+                <div class="fragment-score"><span style='background:{badge_color};color:#fff;padding:2px 6px;border-radius:4px'>Similitud {frag['score']:.0%}</span></div>
+                <div class="fragment-content">{frag['texto']}</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+
+def format_conversation_history(history):
+    return "\n\n".join(f"{m['role']}: {m['content']}" for m in history)
+
+# ---------------- Encabezado custom -----------------
+with st.container():
+    st.markdown(
+        """
+        <div class="app-header">
+            <h1>🏗️ Asistente Técnico Inteligente para Construcción</h1>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+        unsafe_allow_html=True,
+    )
 
-def format_conversation_history(conversation):
-    formatted_history = ""
-    for msg in conversation:
-        formatted_history += f"{msg['role']}: {msg['content']}\n\n"
-    return formatted_history
+# ---------------- Sidebar -----------------
+with st.sidebar:
+    st.header("ℹ️ Guía rápida")
+    st.markdown(
+        """
+        1. Formula tu **consulta técnica** en el cuadro inferior.
+        2. Revisa la respuesta (fuente citada).
+        3. Expande *📚 Fragmentos recuperados* para ver el contexto.
+        """
+    )
+    st.divider()
+    st.caption("Versión UI Mejorada – {:%d %b %Y}.".format(datetime.utcnow()))
+    st.write("© 2025 Tu Empresa")
 
-# ---------------- Interfaz Principal ----------------
-st.title("🔍 Asistente Inteligente de Documentación Técnica")
-st.markdown("Consulta cualquier información técnica de la documentación de edificación.")
-
-# Mostrar historial completo
+# ---------------- Mostrar historial -----------------
 for msg in st.session_state.conversation:
-    with st.chat_message(msg["role"].lower()):
+    role = "assistant" if msg["role"] == "Asistente" else "user"
+    with st.chat_message(role):
         st.markdown(msg["content"])
-        if msg["role"] == "Asistente" and "fragments" in msg:
-            with st.expander("📚 Mostrar fragmentos recuperados"):
+        if role == "assistant" and "fragments" in msg:
+            with st.expander("📚 Mostrar fragmentos recuperados"):
                 display_fragments(msg["fragments"])
 
-# Entrada del usuario
-user_message = st.chat_input("Escribe tu consulta técnica aquí...")
+# ---------------- Entrada del usuario -----------------
+user_message = st.chat_input("Escribe tu consulta técnica aquí…")
 
 if user_message:
     st.session_state.conversation.append({"role": "Usuario", "content": user_message})
-
-    with st.chat_message("usuario"):
+    with st.chat_message("user"):
         st.markdown(user_message)
 
-    with st.spinner("Analizando documentación..."):
+    with st.spinner("🔎 Analizando documentación…"):
+        # (lógica de embedding / búsqueda SIN CAMBIOS)
         embed_result = genai.embed_content(
             model="models/text-embedding-004",
-            content=user_message
+            content=user_message,
         )
         query_vector = embed_result.get("embedding")
 
@@ -146,55 +205,44 @@ if user_message:
             for match in query_response.get("matches", []):
                 score = match.get("score", 0)
                 if score >= MIN_SIMILARITY_SCORE:
-                    metadata = match.get("metadata", {})
-                    texto = metadata.get("texto", "")
-                    documento = metadata.get("documento", "Documento sin nombre")
+                    md = match.get("metadata", {})
+                    texto = md.get("texto", "")
+                    doc = md.get("documento", "Documento sin nombre")
                     if texto:
                         retrieved_segments.append({
                             "texto": texto,
-                            "documento": documento,
-                            "score": score  # guardamos el score
+                            "documento": doc,
+                            "score": score,
                         })
 
-            retrieved_context = "\n---\n".join([f"[{seg['documento']}]: {seg['texto']}" for seg in retrieved_segments])
-            conversation_history = st.session_state.conversation[:-1] if len(st.session_state.conversation) > 1 else []
-            formatted_history = format_conversation_history(conversation_history)
+            retrieved_context = "\n---\n".join([
+                f"[{seg['documento']}]: {seg['texto']}" for seg in retrieved_segments
+            ])
+            history_for_prompt = st.session_state.conversation[:-1] if len(st.session_state.conversation) > 1 else []
+            formatted_history = format_conversation_history(history_for_prompt)
 
             full_prompt = (
                 f"{custom_prompt}\n\n"
-                f"📜 **Historial de la conversación:**\n{formatted_history}\n"
-                f"📚 **Fragmentos de documentación relevantes para responder a la consulta:**\n{retrieved_context}\n\n"
-                f"👤 **Consulta actual del usuario:** {user_message}"
+                f"📜 **Historial de la conversación:**\n{formatted_history}\n"
+                f"📚 **Fragmentos de documentación relevantes:**\n{retrieved_context}\n\n"
+                f"👤 **Consulta actual del usuario:** {user_message}"
             )
 
             response = model.generate_content(full_prompt)
             response_text = response.candidates[0].content.parts[0].text
 
             # Guardar respuesta y fragmentos
-            st.session_state.conversation.append({
-                "role": "Asistente",
-                "content": response_text,
-                "fragments": retrieved_segments
-            })
+            st.session_state.conversation.append(
+                {
+                    "role": "Asistente",
+                    "content": response_text,
+                    "fragments": retrieved_segments,
+                }
+            )
 
-            with st.chat_message("asistente"):
-                st.markdown(response_text)
-                with st.expander("📚 Mostrar fragmentos recuperados"):
-                    display_fragments(retrieved_segments)
-
-# ---------------- Sidebar ----------------
-with st.sidebar:
-    st.subheader("Sobre esta herramienta")
-    st.markdown("""
-    Esta herramienta de consulta utiliza Inteligencia Artificial para buscar y recuperar información específica de la documentación técnica de los proyectos.
-    
-    **Características:**
-    - Búsqueda semántica en toda la documentación
-    - Respuestas basadas en documentos oficiales
-    - Visualización de las fuentes originales
-    
-    **Instrucciones:**
-    1. Escriba su consulta técnica en el cuadro de texto
-    2. Revise la respuesta generada
-    3. Consulte los fragmentos recuperados debajo de cada respuesta
-    """)
+    # Mostrar respuesta
+    with st.chat_message("assistant"):
+        st.markdown(response_text)
+        with st.expander("📚 Mostrar fragmentos recuperados"):
+            display_fragments(retrieved_segments)
+        st.toast("✅ Respuesta generada", icon="🤖")
