@@ -3,8 +3,8 @@ import google.generativeai as genai
 from pinecone import Pinecone
 
 # ---------------- Configuración -----------------
-GENAI_API_KEY = "AIzaSyCPhvLFkQlhVyKsXsgR9EZi09QmmlN3V-k"
-PINECONE_API_KEY = "pcsk_2bRoe6_3Nysegtmsfj3NT4D2Zemd2Vd5KPAniF6hjCRRqgyLeStcGZvrBAMgZaunAE4ohF"
+GENAI_API_KEY = st.secrets["general"]["genai_api_key"]
+PINECONE_API_KEY = st.secrets["general"]["pinecone_api_key"]
 INDEX_NAME = "documentacion-edificacion"
 MIN_SIMILARITY_SCORE = 0.50  # 70%
 
