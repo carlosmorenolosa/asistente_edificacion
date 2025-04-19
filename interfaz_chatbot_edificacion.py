@@ -73,19 +73,6 @@ st.markdown(
             overflow: hidden;
         }}
         
-        .app-header::before {{
-            content: "";
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 300px;
-            height: 100%;
-            background: url('https://img.icons8.com/ios/50/ffffff/building-materials.png') no-repeat;
-            background-position: right 20px center;
-            background-size: 60px;
-            opacity: 0.2;
-        }}
-        
         .app-header h1 {{
             font-family: 'DM Sans', sans-serif;
             font-weight: 700;
@@ -133,6 +120,15 @@ st.markdown(
             display: flex;
             align-items: center;
             gap: 5px;
+        }}
+        
+        .fragment-source-icon {{
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            background-color: {PRIMARY_COLOR};
+            -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2 3.5A1.5 1.5 0 0 1 3.5 2h9A1.5 1.5 0 0 1 14 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 12.5v-9z'/%3E%3C/svg%3E") no-repeat center center / contain;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2 3.5A1.5 1.5 0 0 1 3.5 2h9A1.5 1.5 0 0 1 14 3.5v9a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 12.5v-9z'/%3E%3C/svg%3E") no-repeat center center / contain;
         }}
         
         .fragment-score {{
@@ -406,13 +402,7 @@ def display_fragments(fragments):
             <div class="fragment-container fadein">
                 <div class="fragment-header">
                     <div class="fragment-source">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M13.5 3H2.5C2.22386 3 2 3.22386 2 3.5V12.5C2 12.7761 2.22386 13 2.5 13H13.5C13.7761 13 14 12.7761 14 12.5V3.5C14 3.22386 13.7761 3 13.5 3Z" stroke="{PRIMARY_COLOR}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M4 1V3" stroke="{PRIMARY_COLOR}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M12 1V3" stroke="{PRIMARY_COLOR}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M2 5H14" stroke="{PRIMARY_COLOR}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        {frag['documento']}
+                        📄 {frag['documento']}
                     </div>
                     <div class="fragment-score">
                         <span class="badge {badge_class}">{relevance_text} ({frag['score']:.0%})</span>
@@ -452,7 +442,7 @@ with st.container():
 
 # ---------------- Sidebar -----------------
 with st.sidebar:
-    st.image("https://img.icons8.com/fluency/96/construction.png", width=80)
+    st.header("🏗️ Asistente Técnico")
     st.header("💡 Guía rápida")
     
     st.markdown("""
@@ -487,11 +477,11 @@ with st.sidebar:
     # Mostrar la versión y copyright
     col1, col2 = st.columns(2)
     with col1:
-        st.caption("Versión: Premium UI")
+        st.caption("Versión: Demo Inicial")
     with col2:
         st.caption("{:%d-%m-%Y}".format(datetime.utcnow()))
     
-    st.caption("© 2025 Tu Empresa | Todos los derechos reservados")
+    st.caption("© 2025 Caeys | Todos los derechos reservados")
 
 # ---------------- Mensaje de bienvenida (solo la primera vez) -----------------
 if st.session_state.show_welcome:
@@ -642,7 +632,7 @@ if user_message:
 st.markdown(
     """
     <div class="app-footer">
-        <p>Asistente Técnico Inteligente para Construcción - Desarrollado con ❤️ por Tu Empresa</p>
+        <p>Asistente Técnico Inteligente para Construcción - Desarrollado por Caeys.es</p>
     </div>
     """,
     unsafe_allow_html=True,
