@@ -179,11 +179,12 @@ st.markdown(
             box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         }}
         
-       /* Sidebar */
-            .css-1544g2n {
-                background-color: #CCCCCC;
-                padding: 1.5rem 1rem;
-            }
+        /* Sidebar */
+        .css-1544g2n {{
+            background-color: #CCCCCC;
+            padding: 1.5rem 1rem;
+        }}
+
         
         [data-testid="stSidebarUserContent"] {{
             padding-top: 2rem;
