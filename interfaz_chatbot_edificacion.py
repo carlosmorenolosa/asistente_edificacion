@@ -179,9 +179,9 @@ st.markdown(
             box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         }}
         
-        * Sidebar */
-        .css-1544g2n { /* o [data-testid="stSidebar"] > div:first-child */
-            background-color: #CCCCCC; /* Gris medio */
+       /* Sidebar */
+        .css-1544g2n {
+            background-color: #CCCCCC;
             padding: 1.5rem 1rem;
         }
         
