@@ -179,27 +179,7 @@ st.markdown(
             box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         }}
         
-        /* Sidebar */
-        st.markdown(
-        """
-        <style>
-        /* Fondo de la barra lateral ─ gris oscuro */
-        [data-testid="stSidebar"] > div:first-child {
-            background-color: #333333 !important;  /* el tono que quieras */
-        }
-    
-        /* Texto dentro de la sidebar para que contraste */
-        [data-testid="stSidebar"] p,
-        [data-testid="stSidebar"] h1,
-        [data-testid="stSidebar"] h2,
-        [data-testid="stSidebar"] h3,
-        [data-testid="stSidebar"] li {
-            color: #FFFFFF !important;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-        )
+        
 
 
         
@@ -431,6 +411,24 @@ def display_fragments(fragments):
             """,
             unsafe_allow_html=True,
         )
+        st.markdown("""
+        <style>
+        /* Fondo gris oscuro de la sidebar */
+        section[data-testid="stSidebar"] > div:first-child {
+            background-color: #333333 !important;
+        }
+        
+        /* Texto en blanco para contraste */
+        section[data-testid="stSidebar"] p,
+        section[data-testid="stSidebar"] h1,
+        section[data-testid="stSidebar"] h2,
+        section[data-testid="stSidebar"] h3,
+        section[data-testid="stSidebar"] li {
+            color: #FFFFFF !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
 
 
 def format_conversation_history(history):
