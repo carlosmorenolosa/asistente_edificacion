@@ -181,7 +181,7 @@ st.markdown(
         
         /* Sidebar */
         .css-1544g2n {{
-            background-color: #CCCCCC;
+            background-color: #333333;
             padding: 1.5rem 1rem;
         }}
 
