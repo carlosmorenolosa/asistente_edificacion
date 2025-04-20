@@ -180,10 +180,27 @@ st.markdown(
         }}
         
         /* Sidebar */
-        .css-1544g2n {{
-            background-color: #333333;
-            padding: 1.5rem 1rem;
-        }}
+        st.markdown(
+        """
+        <style>
+        /* Fondo de la barra lateral ─ gris oscuro */
+        [data-testid="stSidebar"] > div:first-child {
+            background-color: #333333 !important;  /* el tono que quieras */
+        }
+    
+        /* Texto dentro de la sidebar para que contraste */
+        [data-testid="stSidebar"] p,
+        [data-testid="stSidebar"] h1,
+        [data-testid="stSidebar"] h2,
+        [data-testid="stSidebar"] h3,
+        [data-testid="stSidebar"] li {
+            color: #FFFFFF !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+        )
+
 
         
         [data-testid="stSidebarUserContent"] {{
