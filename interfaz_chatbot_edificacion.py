@@ -179,11 +179,11 @@ st.markdown(
             box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         }}
         
-        /* Sidebar */
-        .css-1544g2n {{
-            background-color: #F0F7FF;
+        * Sidebar */
+        .css-1544g2n { /* o [data-testid="stSidebar"] > div:first-child */
+            background-color: #CCCCCC; /* Gris medio */
             padding: 1.5rem 1rem;
-        }}
+        }
         
         [data-testid="stSidebarUserContent"] {{
             padding-top: 2rem;
@@ -442,7 +442,7 @@ with st.container():
 
 # ---------------- Sidebar -----------------
 with st.sidebar:
-    st.image("caeys_logo_3.png", use_column_width='auto') # <-- AÑADIDO: Muestra la imagen
+    st.image("caeys_logo_3.png", use_container_width='auto') # <-- AÑADIDO: Muestra la imagen
     st.header("🏗️ Asistente Técnico")
     st.header("💡 Guía rápida")
     
