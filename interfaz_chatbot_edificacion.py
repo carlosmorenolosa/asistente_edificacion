@@ -411,23 +411,7 @@ def display_fragments(fragments):
             """,
             unsafe_allow_html=True,
         )
-        st.markdown("""
-        <style>
-        /* Fondo gris oscuro de la sidebar */
-        section[data-testid="stSidebar"] > div:first-child {
-            background-color: #333333 !important;
-        }
         
-        /* Texto en blanco para contraste */
-        section[data-testid="stSidebar"] p,
-        section[data-testid="stSidebar"] h1,
-        section[data-testid="stSidebar"] h2,
-        section[data-testid="stSidebar"] h3,
-        section[data-testid="stSidebar"] li {
-            color: #FFFFFF !important;
-        }
-        </style>
-        """, unsafe_allow_html=True)
 
 
 
