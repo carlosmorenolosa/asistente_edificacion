@@ -181,7 +181,7 @@ st.markdown(
         
         /* Sidebar */
         .css-1544g2n {{
-            background-color: #f8f9fa;
+            background-color: #F0F7FF;
             padding: 1.5rem 1rem;
         }}
         
@@ -442,6 +442,7 @@ with st.container():
 
 # ---------------- Sidebar -----------------
 with st.sidebar:
+    st.image("caeys_logo_3.png", use_column_width='auto') # <-- AÑADIDO: Muestra la imagen
     st.header("🏗️ Asistente Técnico")
     st.header("💡 Guía rápida")
     
