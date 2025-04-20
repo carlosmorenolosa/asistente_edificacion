@@ -458,7 +458,6 @@ with st.container():
 
 # ---------------- Sidebar -----------------
 with st.sidebar:
-    st.image("caeys_logo_3.png", use_container_width='auto') # <-- AÑADIDO: Muestra la imagen
     st.header("🏗️ Asistente Técnico")
     st.header("💡 Guía rápida")
     
