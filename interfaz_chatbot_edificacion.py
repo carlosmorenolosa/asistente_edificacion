@@ -180,10 +180,10 @@ st.markdown(
         }}
         
        /* Sidebar */
-        .css-1544g2n {
-            background-color: #CCCCCC;
-            padding: 1.5rem 1rem;
-        }
+            .css-1544g2n {
+                background-color: #CCCCCC;
+                padding: 1.5rem 1rem;
+            }
         
         [data-testid="stSidebarUserContent"] {{
             padding-top: 2rem;
